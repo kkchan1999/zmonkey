@@ -282,12 +282,12 @@ print_pkt(struct rte_mbuf *pkt)
     eth_hdr = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
     printf("%02X:%02X:%02X:%02X:%02X:%02X -> %02X:%02X:%02X:%02X:%02X:%02X \n",
 
-           eth_hdr->s_addr.addr_bytes[0], eth_hdr->s_addr.addr_bytes[1],
-           eth_hdr->s_addr.addr_bytes[2], eth_hdr->s_addr.addr_bytes[3],
-           eth_hdr->s_addr.addr_bytes[4], eth_hdr->s_addr.addr_bytes[5],
-           eth_hdr->d_addr.addr_bytes[0], eth_hdr->d_addr.addr_bytes[1],
-           eth_hdr->d_addr.addr_bytes[2], eth_hdr->d_addr.addr_bytes[3],
-           eth_hdr->d_addr.addr_bytes[4], eth_hdr->d_addr.addr_bytes[5]);
+           eth_hdr->src_addr.addr_bytes[0], eth_hdr->src_addr.addr_bytes[1],
+           eth_hdr->src_addr.addr_bytes[2], eth_hdr->src_addr.addr_bytes[3],
+           eth_hdr->src_addr.addr_bytes[4], eth_hdr->src_addr.addr_bytes[5],
+           eth_hdr->dst_addr.addr_bytes[0], eth_hdr->dst_addr.addr_bytes[1],
+           eth_hdr->dst_addr.addr_bytes[2], eth_hdr->dst_addr.addr_bytes[3],
+           eth_hdr->dst_addr.addr_bytes[4], eth_hdr->dst_addr.addr_bytes[5]);
 
     if (pkt->packet_type & RTE_PTYPE_L3_IPV4)
     {

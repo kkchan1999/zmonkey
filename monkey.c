@@ -214,8 +214,8 @@ int lcore_monkey(struct monkey_params *p)
                 } 
                 if (p->enable_mac_update > 0) {
                    eth_hdr = rte_pktmbuf_mtod(tx_pkts[ring_id][i], struct rte_ether_hdr *);
-                   rte_ether_addr_copy(&p->src_mac[ring_id],&eth_hdr->s_addr);
-                   rte_ether_addr_copy(&p->dst_mac[ring_id],&eth_hdr->d_addr);
+                   rte_ether_addr_copy(&p->src_mac[ring_id],&eth_hdr->src_addr);
+                   rte_ether_addr_copy(&p->dst_mac[ring_id],&eth_hdr->dst_addr);
                 }
                 rte_eth_tx_buffer(ring_id, p->queue_id, tx_buffer[ring_id], tx_pkts[ring_id][i]);
                 tx_pkt_cnt[ring_id]++;
@@ -232,8 +232,8 @@ int lcore_monkey(struct monkey_params *p)
                 } 
                 if (p->enable_mac_update > 0) {
                    eth_hdr = rte_pktmbuf_mtod(tx_pkts[ring_id][i], struct rte_ether_hdr *);
-                   rte_ether_addr_copy(&p->src_mac[ring_id],&eth_hdr->s_addr);
-                   rte_ether_addr_copy(&p->dst_mac[ring_id],&eth_hdr->d_addr);
+                   rte_ether_addr_copy(&p->src_mac[ring_id],&eth_hdr->src_addr);
+                   rte_ether_addr_copy(&p->dst_mac[ring_id],&eth_hdr->dst_addr);
                 }
                 rte_eth_tx_buffer(ring_id, p->queue_id, tx_buffer[ring_id], tx_pkts[ring_id][i]);
                 tx_pkt_cnt[ring_id]++;

@@ -34,32 +34,32 @@ int port_init(uint16_t port, struct rte_mempool **mbuf_pool, uint16_t num_rx_que
 
     struct rte_eth_conf port_conf = {
         .rxmode = {
-            .max_rx_pkt_len = RTE_ETHER_MAX_LEN,
-            .mq_mode = ETH_MQ_RX_RSS,
+            .mtu = RTE_ETHER_MAX_LEN,
+            .mq_mode = RTE_ETH_MQ_RX_RSS,
         },
         .rx_adv_conf = {
             .rss_conf = {
                 .rss_key = NULL,
-                .rss_hf = dev_info.flow_type_rss_offloads & ETH_RSS_PROTO_MASK,
+                .rss_hf = dev_info.flow_type_rss_offloads & RTE_ETH_RSS_PROTO_MASK,
             },
         },
         .txmode = {
-            .mq_mode = ETH_MQ_TX_NONE,
+            .mq_mode = RTE_ETH_MQ_TX_NONE,
         }};
 
     printf("\n\ninitializing port %d with(rxq:%d txq:%d)...\n", port, num_rx_queue, num_tx_queue);
 
 
-    if (dev_info.tx_offload_capa & DEV_TX_OFFLOAD_MBUF_FAST_FREE)
+    if (dev_info.tx_offload_capa & RTE_ETH_TX_OFFLOAD_MBUF_FAST_FREE)
     {
         printf("port[%u] support TX mbuf fast free offload.\n", port);
-        port_conf.txmode.offloads |= DEV_TX_OFFLOAD_MBUF_FAST_FREE;
+        port_conf.txmode.offloads |= RTE_ETH_TX_OFFLOAD_MBUF_FAST_FREE;
     }
 
-    if (dev_info.tx_offload_capa & DEV_TX_OFFLOAD_MT_LOCKFREE)
+    if (dev_info.tx_offload_capa & RTE_ETH_TX_OFFLOAD_MT_LOCKFREE)
     {
         printf("port[%u] support TX MT lock free offload.\n", port);
-        port_conf.txmode.offloads |= DEV_TX_OFFLOAD_MT_LOCKFREE;
+        port_conf.txmode.offloads |= RTE_ETH_TX_OFFLOAD_MT_LOCKFREE;
     }
 
     /* Configure the Ethernet device. */
