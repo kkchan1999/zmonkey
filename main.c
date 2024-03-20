@@ -90,6 +90,8 @@ int main(int argc, char *argv[])
     {
         char mbuf_pool_name[18];
         sprintf(mbuf_pool_name, "MBUF_POOL%d", i);
+
+        //每个 core 单独创建一个 mbuf_pool
         mbuf_pool[i] = rte_pktmbuf_pool_create(mbuf_pool_name, config.mbuf_size,
                                                MBUF_CACHE_SIZE, 8,
                                                RTE_MBUF_DEFAULT_BUF_SIZE, rte_lcore_to_socket_id(config.first_lcore + i));
@@ -106,7 +108,7 @@ int main(int argc, char *argv[])
 
     printf("Starting service process...\n");
 
-    /* Start Monkey process */
+    /* 启动 monkey (也就是转发线程) */
     unsigned int lcore_num = config.first_lcore;
     struct monkey_params *lp = (struct monkey_params *)malloc(sizeof(struct monkey_params) * config.num_service_core);
 
@@ -139,7 +141,7 @@ int main(int argc, char *argv[])
             rte_ether_addr_copy(&config.dst_mac[0], &lp->dst_mac[0]);
             rte_ether_addr_copy(&config.dst_mac[1], &lp->dst_mac[1]);
         }
-        rte_eal_remote_launch((lcore_function_t *)lcore_monkey, &lp[i], lcore_num++);
+        rte_eal_remote_launch((lcore_function_t *)lcore_monkey, &lp[i], lcore_num++); //这里运行其他的线程
     }
 
     // control process

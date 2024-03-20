@@ -12,10 +12,10 @@ static bool event_flag(uint64_t rate)
 }
 
 //return CPU tick time
-static uint64_t us_to_tsc(uint64_t time_druation_in_us)
+static uint64_t us_to_tsc(uint64_t time_duration_in_us)
 {
-    return (rte_get_tsc_hz() + US_PER_S - 1) / US_PER_S * time_druation_in_us;
-}
+    return (rte_get_tsc_hz() + US_PER_S - 1) / US_PER_S * time_duration_in_us; // 加上US_PER_S-1是为了消除误差?
+} //多看看大佬写代码还是有好处的...
 
 struct monkey_metadata {
         uint16_t num; //packet number with the same timestamp
@@ -54,8 +54,7 @@ int lcore_monkey(struct monkey_params *p)
 
     //periodic timer
     uint64_t prev_tsc, diff_tsc, cur_tsc, timer_tsc;
-    const uint64_t drain_tsc = (rte_get_tsc_hz() + US_PER_S - 1) / US_PER_S *
-                               BURST_TX_DRAIN_US;
+    const uint64_t drain_tsc = (rte_get_tsc_hz() + US_PER_S - 1) / US_PER_S * BURST_TX_DRAIN_US;
     const uint64_t adjust_tsc_multiplier = 1 * US_PER_S / BURST_TX_DRAIN_US;
     uint64_t adjust_cnt = 0;
     prev_tsc = 0;
@@ -113,7 +112,9 @@ int lcore_monkey(struct monkey_params *p)
                 rte_atomic64_set(&p->stats[i]->q_depth, rte_ring_count(delay_ring[i]));
                 
                 loss_rate[i] = rte_atomic64_read(&p->config[i]->drop_rate) / 1.22;
-                
+
+
+                // 根据用户输入的值计算时延以及 jitter , 最终时延+ jitter 会变成一个latency_tsc值
                 jitter[i] = rte_atomic64_read(&p->config[i]->jitter);
                 latency[i] = rte_atomic64_read(&p->config[i]->latency)- jitter[i];
                 jitter[i] = jitter[i]*2;
@@ -134,13 +135,13 @@ int lcore_monkey(struct monkey_params *p)
         {
             for (int i = 0; i < 2; i++)
             {
-                rte_eth_tx_buffer_flush(i, p->queue_id, tx_buffer[i]);
+                rte_eth_tx_buffer_flush(i, p->queue_id, tx_buffer[i]); //刷新 buffer, 还有没发出去的报文则发送出去
             }
             prev_tsc = cur_tsc;
             adjust_cnt++;
         }
 
-       //Packet RX with Loss 
+       //Packet RX with Loss , 收包的时候顺便把丢包给做了
         for (uint16_t port_id = 0; port_id < 2; port_id++)
         {
 
@@ -155,7 +156,7 @@ int lcore_monkey(struct monkey_params *p)
             }
             rx_pkt_cnt[port_id] += nb_rx;
             uint16_t loss_cnt = 0;
-            for (int i = 0; i < nb_rx; i++)
+            for (int i = 0; i < nb_rx; i++) //每个报文计算一下是否需要丢包, 如果丢包则直接不进入 queue
             {
                 if (event_flag(loss))
                 {

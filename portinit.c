@@ -40,7 +40,7 @@ int port_init(uint16_t port, struct rte_mempool **mbuf_pool, uint16_t num_rx_que
         .rx_adv_conf = {
             .rss_conf = {
                 .rss_key = NULL,
-                .rss_hf = dev_info.flow_type_rss_offloads & RTE_ETH_RSS_PROTO_MASK,
+                .rss_hf = dev_info.flow_type_rss_offloads & RTE_ETH_RSS_PROTO_MASK, //能用什么直接全部用用上了...
             },
         },
         .txmode = {
